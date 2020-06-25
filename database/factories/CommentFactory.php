@@ -2,12 +2,13 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\Story;
+use App\Models\Comment;
 use Faker\Generator as Faker;
 
-$factory->define(Story::class, function (Faker $faker) {
+$factory->define(Comment::class, function (Faker $faker) {
     return [
-        'language' => $faker->languageCode,
+        'comment' => $faker->text(),
         'user_id' => factory(User::class),
+        'story_id' => factory(Story::class),
     ];
 });
