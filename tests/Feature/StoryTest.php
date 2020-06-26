@@ -28,7 +28,6 @@ class StoryTest extends TestCase
         $this->assertCount(1, Story::all());
         $this->assertTwoStoriesAreEqual($response, Story::first());
         $response->assertStatus(Response::HTTP_CREATED);
-
     }
 
     /** @test */
@@ -38,8 +37,27 @@ class StoryTest extends TestCase
         $response = $this->get('/api/stories/' . $story->id . '?api_token=' . $this->user->api_token);
         $this->assertTwoStoriesAreEqual($response, $story);
         $this->assertCount(1, Story::all());
-
         $response->assertStatus(Response::HTTP_OK);
+    }
+
+    /** @test */
+    public function a_story_can_be_patched()
+    {
+        $story = factory(Story::class)->create(['user_id' => $this->user->id]);
+        $response = $this->patch('/api/stories/' . $story->id, $this->data() );
+        $story->refresh();
+        $this->assertTwoStoriesAreEqual($response, $story);
+        $response->assertStatus(Response::HTTP_OK);
+    }
+
+    /** @test */
+    public function a_story_can_be_deleted()
+    {
+        $story = factory(Story::class)->create(['user_id' => $this->user->id]);
+        $response = $this->delete('/api/stories/' . $story->id, ['api_token' => $this->user->api_token]);
+        $story->refresh();
+        $this->assertNotNull($story->deleted_at);
+        //$response->assertStatus(Response::HTTP_NO_CONTENT);
     }
 
     private function assertTwoStoriesAreEqual($response, $story)

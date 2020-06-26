@@ -50,7 +50,8 @@ class StoryController extends Controller
      */
     public function update(Request $request, Story $story)
     {
-        //
+        $story->update($this->validateData());
+        return $story;
     }
 
     /**
@@ -61,7 +62,8 @@ class StoryController extends Controller
      */
     public function destroy(Story $story)
     {
-        //
+        $story->delete();
+        return $story;
     }
 
     public function validateData()
