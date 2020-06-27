@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\StoryResource;
 use App\Models\User;
 use App\Models\Story;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class StoryController extends Controller
 {
@@ -13,9 +15,14 @@ class StoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $this->authorize('viewAny', Story::class);
+        if ($request->input('id')) {
+            return StoryResource::collection(request()->user()->stories()->orderBy('updated_at', 'desc')->paginate(config('global.pagination_records')) );
+        } else {
+            return StoryResource::collection(Story::paginate(config('global.pagination_records')));
+        }
     }
 
     /**
@@ -26,8 +33,10 @@ class StoryController extends Controller
      */
     public function store(Request $request)
     {
-        $story = request()->user()->stories()->create($this->validateData());
-        return $story;
+        $this->authorize('create', Story::class);
+        $story = request()->user()->stories()->create($this->validateStoryData());
+        $story->parts()->create(['content' => 'asdf', 'created_by' => request()->user()->id]);
+        return (new StoryResource($story))->response(Response::HTTP_CREATED);
     }
 
     /**
@@ -38,7 +47,8 @@ class StoryController extends Controller
      */
     public function show(Story $story)
     {
-        return $story;
+        $this->authorize('view', $story);
+        return new StoryResource($story);
     }
 
     /**
@@ -50,8 +60,9 @@ class StoryController extends Controller
      */
     public function update(Request $request, Story $story)
     {
-        $story->update($this->validateData());
-        return $story;
+        $this->authorize('update', $story);
+        $story->update($this->validateStoryData());
+        return new StoryResource($story);
     }
 
     /**
@@ -62,11 +73,12 @@ class StoryController extends Controller
      */
     public function destroy(Story $story)
     {
+        $this->authorize('delete', $story);
         $story->delete();
-        return $story;
+        return response([], Response::HTTP_NO_CONTENT);
     }
 
-    public function validateData()
+    public function validateStoryData()
     {
         return request()->validate([
             'language' => 'required|size:2',

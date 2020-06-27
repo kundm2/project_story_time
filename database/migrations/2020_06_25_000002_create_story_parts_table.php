@@ -16,7 +16,7 @@ class CreateStoryPartsTable extends Migration
         Schema::create('story_parts', function (Blueprint $table) {
             $table->id();
             $table->text('content');
-            $table->boolean('is_image');
+            $table->boolean('is_image')->default(false);
             $table->unsignedBigInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users');
             $table->unsignedBigInteger('story_id');
