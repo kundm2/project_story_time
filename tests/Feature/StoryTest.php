@@ -64,17 +64,17 @@ class StoryTest extends TestCase
     }
 
     /** @test */
-    public function a_language_code_needs_two_chars()
+    public function a_language_code_needs_two_chars_long()
     {
         $response = $this->post('/api/stories', array_merge($this->data(), ['language' => 'english']));
-        $response->assertSessionHasErrors('language');
+        $response->assertJsonValidationErrors('language');
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertCount(0, Story::all());
-        //$response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $response = $this->post('/api/stories', array_merge($this->data(), ['language' => '']));
-        $response->assertSessionHasErrors('language');
+        $response->assertJsonValidationErrors('language');
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertCount(0, Story::all());
-        //$response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     /** @test */

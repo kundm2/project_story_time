@@ -2,21 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -25,18 +17,9 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Comment  $comment
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Comment $comment)
-    {
-        //
+        $this->authorize('create', Comment::class);
+        $comment = request()->user()->comments()->create($this->validateCommentData());
+        return (new CommentResource($comment))->response(Response::HTTP_CREATED);
     }
 
     /**
@@ -48,7 +31,9 @@ class CommentController extends Controller
      */
     public function update(Request $request, Comment $comment)
     {
-        //
+        $this->authorize('update', $comment);
+        $comment->update($this->validateCommentData());
+        return new CommentResource($comment);
     }
 
     /**
@@ -59,6 +44,16 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        $this->authorize('delete', $comment);
+        $comment->delete();
+        return response([], Response::HTTP_NO_CONTENT);
+    }
+
+    public function validateCommentData()
+    {
+        return request()->validate([
+            'comment' => 'required',
+            'story_id' => 'required|exists:App\Models\Story,id',
+        ]);
     }
 }

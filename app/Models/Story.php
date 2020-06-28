@@ -8,13 +8,6 @@ use Illuminate\Support\Facades\URL;
 
 class Story extends Model
 {
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'stories';
-
     use SoftDeletes;
 
     protected $guarded = [];
