@@ -69,7 +69,26 @@ class RatingTest extends TestCase
     /** @test */
     public function a_rating_is_required()
     {
-        $response = $this->post('/api/ratings', array_merge($this->data(), ['rating' => '']) );
+        $response = $this->post('/api/ratings', array_merge($this->data(), ['rating' => null]) );
+        $response->assertJsonValidationErrors('rating');
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->assertCount(0, Rating::all());
+    }
+
+    /** @test */
+    public function a_rating_has_to_be_an_integer_or_a_half_number_between_one_and_five()
+    {
+        $response = $this->post('/api/ratings', array_merge($this->data(), ['rating' => 1.25]) );
+        $response->assertJsonValidationErrors('rating');
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->assertCount(0, Rating::all());
+
+        $response = $this->post('/api/ratings', array_merge($this->data(), ['rating' => 12.5]) );
+        $response->assertJsonValidationErrors('rating');
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->assertCount(0, Rating::all());
+
+        $response = $this->post('/api/ratings', array_merge($this->data(), ['rating' => 6]) );
         $response->assertJsonValidationErrors('rating');
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertCount(0, Rating::all());
@@ -126,7 +145,7 @@ class RatingTest extends TestCase
     private function data()
     {
         return [
-            'rating' => $this->faker->randomFloat(),
+            'rating' => $this->faker->randomElement([1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]),
             'story_id' => $this->story->id,
             'api_token' => $this->user->api_token
         ];

@@ -69,7 +69,7 @@ class RatingController extends Controller
     public function validateRatingData()
     {
         return request()->validate([
-            'rating' => 'required',
+            'rating' => 'required|in:1,1.5,2.0,2.5,3,3.5,4,4.5,5',
             'story_id' => 'required|exists:App\Models\Story,id',
         ]);
     }
