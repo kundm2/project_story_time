@@ -4,11 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
+use App\Models\Story;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CommentController extends Controller
 {
+    /**
+     * Display a listing of stories.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $this->authorize('viewAny', Comment::class);
+        if ($request->input('story_id')) {
+            $story = Story::firstOrFail($request->input('story_id'));
+            return CommentResource::collection($story->comments()->paginate(config('global.pagination_records')) );
+        } else {
+            return CommentResource::collection(Comment::paginate(config('global.pagination_records')));
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *

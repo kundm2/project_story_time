@@ -22,6 +22,11 @@ class Story extends Model
         return $this->hasMany(StoryPart::class);
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function path()
     {
         return '/stories/' . $this->id;

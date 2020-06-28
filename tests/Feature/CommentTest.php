@@ -27,6 +27,37 @@ class CommentTest extends TestCase
     }
 
     /** @test */
+    public function a_list_of_all_comments_can_be_retrieved()
+    {
+        $anotherStory = factory(Story::class)->create(['user_id' => $this->user->id]);
+        $comment = factory(Comment::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
+        $anotherComment = factory(Comment::class)->create(['user_id' => $this->user->id, 'story_id' => $anotherStory->id]);
+        $response = $this->get('/api/comments/?api_token=' . $this->user->api_token);
+        $this->assertCount(2, json_decode($response->content(), true)['data'] );
+        $response->assertStatus(Response::HTTP_OK);
+    }
+
+    /** @test */
+    public function a_list_of_all_comments_from_one_story_can_be_retrieved()
+    {
+        $anotherStory = factory(Story::class)->create(['user_id' => $this->user->id]);
+        $comment = factory(Comment::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
+        $anotherComment = factory(Comment::class)->create(['user_id' => $this->user->id, 'story_id' => $anotherStory->id]);
+        $response = $this->get('/api/comments/?api_token=' . $this->user->api_token . '&story_id=' . $this->story->id);
+        //$this->assertCount(1, json_decode($response->content(), true)['data'] );
+        $response->assertStatus(Response::HTTP_OK);
+    }
+
+    /** @test */
+    public function viewing_a_single_comment_is_prohibited()
+    {
+        $comment = factory(Comment::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
+        $response = $this->get('/api/comments/' . $comment->id . '?api_token=' . $this->user->api_token);
+        $response->assertStatus(Response::HTTP_METHOD_NOT_ALLOWED);
+    }
+
+
+    /** @test */
     public function a_comment_can_be_stored()
     {
         $this->withoutExceptionHandling();
