@@ -44,7 +44,7 @@ class RatingTest extends TestCase
         $rating = factory(Rating::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
         $anotherRating = factory(Rating::class)->create(['user_id' => $this->user->id, 'story_id' => $anotherStory->id]);
         $response = $this->get('/api/ratings/?api_token=' . $this->user->api_token . '&story_id=' . $this->story->id);
-        //$this->assertCount(1, json_decode($response->content(), true)['data'] );
+        $this->assertCount(1, json_decode($response->content(), true)['data'] );
         $response->assertStatus(Response::HTTP_OK);
     }
 
@@ -136,7 +136,7 @@ class RatingTest extends TestCase
             'data' => [
                 'id' => $rating->id,
                 'rating' => $rating->rating,
-                'story_id' => $rating->id,
+                'story_id' => $rating->story_id,
                 'user_id' => $rating->user_id
             ],
         ]);

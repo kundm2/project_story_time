@@ -19,7 +19,7 @@ class RatingController extends Controller
     {
         $this->authorize('viewAny', Rating::class);
         if ($request->input('story_id')) {
-            $story = Story::firstOrFail($request->input('story_id'));
+            $story = Story::findOrFail($request->input('story_id'));
             return RatingResource::collection($story->ratings()->paginate(config('global.pagination_records')) );
         } else {
             return RatingResource::collection(Rating::paginate(config('global.pagination_records')));
