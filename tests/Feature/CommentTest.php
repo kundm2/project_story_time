@@ -56,7 +56,6 @@ class CommentTest extends TestCase
         $response->assertStatus(Response::HTTP_METHOD_NOT_ALLOWED);
     }
 
-
     /** @test */
     public function a_comment_can_be_stored()
     {

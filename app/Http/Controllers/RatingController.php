@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\RatingResource;
 use App\Models\Rating;
+use App\Models\Story;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class RatingController extends Controller
 {
@@ -12,9 +15,15 @@ class RatingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $this->authorize('viewAny', Rating::class);
+        if ($request->input('story_id')) {
+            $story = Story::firstOrFail($request->input('story_id'));
+            return RatingResource::collection($story->ratings()->paginate(config('global.pagination_records')) );
+        } else {
+            return RatingResource::collection(Rating::paginate(config('global.pagination_records')));
+        }
     }
 
     /**
@@ -25,18 +34,9 @@ class RatingController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Rating  $rating
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Rating $rating)
-    {
-        //
+        $this->authorize('create', Rating::class);
+        $rating = request()->user()->ratings()->create($this->validateRatingData());
+        return (new RatingResource($rating))->response(Response::HTTP_CREATED);
     }
 
     /**
@@ -48,7 +48,9 @@ class RatingController extends Controller
      */
     public function update(Request $request, Rating $rating)
     {
-        //
+        $this->authorize('update', $rating);
+        $rating->update($this->validateRatingData());
+        return new RatingResource($rating);
     }
 
     /**
@@ -59,6 +61,16 @@ class RatingController extends Controller
      */
     public function destroy(Rating $rating)
     {
-        //
+        $this->authorize('delete', $rating);
+        $rating->delete();
+        return response([], Response::HTTP_NO_CONTENT);
+    }
+
+    public function validateRatingData()
+    {
+        return request()->validate([
+            'rating' => 'required',
+            'story_id' => 'required|exists:App\Models\Story,id',
+        ]);
     }
 }

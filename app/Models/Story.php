@@ -27,6 +27,11 @@ class Story extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
     public function path()
     {
         return '/stories/' . $this->id;

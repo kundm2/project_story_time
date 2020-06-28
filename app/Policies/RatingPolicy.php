@@ -5,6 +5,8 @@ namespace App\Policies;
 use App\Models\Rating;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
+use Symfony\Component\HttpFoundation\Response as HTTPResponse;
 
 class RatingPolicy
 {
@@ -18,7 +20,7 @@ class RatingPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -30,7 +32,7 @@ class RatingPolicy
      */
     public function view(User $user, Rating $rating)
     {
-        //
+        return true;
     }
 
     /**
@@ -41,7 +43,7 @@ class RatingPolicy
      */
     public function create(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -53,7 +55,9 @@ class RatingPolicy
      */
     public function update(User $user, Rating $rating)
     {
-        //
+        return $user->id == $rating->user_id
+            ? Response::allow()
+            : Response::deny('You do not own this rating.', HTTPResponse::HTTP_FORBIDDEN);
     }
 
     /**
@@ -65,7 +69,9 @@ class RatingPolicy
      */
     public function delete(User $user, Rating $rating)
     {
-        //
+        return $user->id == $rating->user_id
+            ? Response::allow()
+            : Response::deny('You do not own this rating.', HTTPResponse::HTTP_FORBIDDEN);
     }
 
     /**
@@ -77,7 +83,7 @@ class RatingPolicy
      */
     public function restore(User $user, Rating $rating)
     {
-        //
+        return false;
     }
 
     /**
@@ -89,6 +95,6 @@ class RatingPolicy
      */
     public function forceDelete(User $user, Rating $rating)
     {
-        //
+        return false;
     }
 }
