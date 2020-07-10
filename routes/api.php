@@ -17,4 +17,5 @@ Route::middleware('auth:api')->group( function () {
     Route::resource('stories', 'StoryController');
     Route::resource('comments', 'CommentController', ['except' => [ 'show' ]] );
     Route::resource('ratings', 'RatingController', ['except' => [ 'show' ]] );
+    Route::resource('story_parts', 'RatingController', ['except' => [ 'show' ]] );
 });

@@ -25,7 +25,7 @@ class StoryPartController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->authorize('create', StoryPart::class);
     }
 
     /**
@@ -61,4 +61,13 @@ class StoryPartController extends Controller
     {
         //
     }
+
+    public function validateRatingData()
+    {
+        return request()->validate([
+            'rating' => 'required',
+            'created_by' => 'required|exists:App\Models\User,id',
+        ]);
+    }
+}
 }

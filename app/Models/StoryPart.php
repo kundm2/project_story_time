@@ -8,18 +8,26 @@ use Illuminate\Support\Facades\URL;
 
 class StoryPart extends Model
 {
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    // protected $table = 'story_parts';
-
-    protected $guarded = [];
-
     use SoftDeletes;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'content', 'is_image', 'created_by', 'story_id'
+    ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function story()
+    {
+        return $this->belongsTo(Story::class);
+    }
 
     public function path()
     {

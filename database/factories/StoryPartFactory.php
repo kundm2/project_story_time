@@ -4,6 +4,7 @@
 
 use App\Models\Story;
 use App\Models\StoryPart;
+use App\Models\User;
 use Faker\Generator as Faker;
 
 $factory->define(StoryPart::class, function (Faker $faker) {

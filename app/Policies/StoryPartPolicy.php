@@ -2,13 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Rating;
 use App\Models\User;
+use App\Models\StoryPart;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Auth\Access\Response;
-use Symfony\Component\HttpFoundation\Response as HTTPResponse;
 
-class RatingPolicy
+class StoryPartPolicy
 {
     use HandlesAuthorization;
 
@@ -27,10 +25,10 @@ class RatingPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Rating  $rating
+     * @param  \App\StoryPart  $storyPart
      * @return mixed
      */
-    public function view(User $user, Rating $rating)
+    public function view(User $user, StoryPart $storyPart)
     {
         return false;
     }
@@ -50,38 +48,34 @@ class RatingPolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Rating  $rating
+     * @param  \App\StoryPart  $storyPart
      * @return mixed
      */
-    public function update(User $user, Rating $rating)
+    public function update(User $user, StoryPart $storyPart)
     {
-        return $user->id == $rating->user_id
-            ? Response::allow()
-            : Response::deny('You do not own this rating.', HTTPResponse::HTTP_FORBIDDEN);
+        return false;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Rating  $rating
+     * @param  \App\StoryPart  $storyPart
      * @return mixed
      */
-    public function delete(User $user, Rating $rating)
+    public function delete(User $user, StoryPart $storyPart)
     {
-        return $user->id == $rating->user_id
-            ? Response::allow()
-            : Response::deny('You do not own this rating.', HTTPResponse::HTTP_FORBIDDEN);
+        return false;
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Rating  $rating
+     * @param  \App\StoryPart  $storyPart
      * @return mixed
      */
-    public function restore(User $user, Rating $rating)
+    public function restore(User $user, StoryPart $storyPart)
     {
         return false;
     }
@@ -90,10 +84,10 @@ class RatingPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Rating  $rating
+     * @param  \App\StoryPart  $storyPart
      * @return mixed
      */
-    public function forceDelete(User $user, Rating $rating)
+    public function forceDelete(User $user, StoryPart $storyPart)
     {
         return false;
     }
