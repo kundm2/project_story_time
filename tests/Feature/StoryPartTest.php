@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,43 +19,44 @@ class StoryPartTest extends TestCase
 
     protected $user;
     protected $story;
+    protected $image_directory;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->user = factory(User::class)->create();
         $this->story = factory(Story::class)->create();
+        $this->image_directory = storage_path('images');
     }
 
-    private function assertTwoRatingsAreEqual($response, $storyPart)
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        Storage::cleanDirectory($this->image_directory);
+    }
+    
+
+    /** @test */
+    public function a_rating_can_be_stored()
+    {
+        $this->withoutExceptionHandling();
+        $response = $this->post('/api/stories/' . $this->story->id . '/story_parts', $this->data());
+        $this->assertCount(1, StoryPart::all());
+        $this->assertTwoStoryPartsAreEqual($response, StoryPart::first());
+        $response->assertStatus(Response::HTTP_CREATED);
+    }
+
+    private function assertTwoStoryPartsAreEqual($response, $storyPart)
     {
         $response->assertJson([
             'data' => [
                 'id' => $storyPart->id,
                 'content' => $storyPart->content,
                 'is_image' => $storyPart->is_image,
-                'story_id' => $storyPart->story_id,
-                'user_id' => $storyPart->user_id
+                'created_by' => $storyPart->user_id,
+                'story_id' => $storyPart->story_id
             ],
         ]);
-    }
-
-    /** @test */
-    public function viewing_a_single_story_part_is_prohibited()
-    {
-        $rating = factory(StoryPart::class)->create(['created_by' => $this->user->id, 'story_id' => $this->story->id]);
-        $response = $this->get('/api/story_parts/' . $rating->id . '?api_token=' . $this->user->api_token);
-        $response->assertStatus(Response::HTTP_METHOD_NOT_ALLOWED);
-    }
-
-    /** @test */
-    public function a_rating_can_be_stored()
-    {
-        $this->withoutExceptionHandling();
-        $response = $this->post('/api/story_parts', $this->data());
-        $this->assertCount(1, StoryPart::all());
-        $this->assertTwoRatingsAreEqual($response, StoryPart::first());
-        $response->assertStatus(Response::HTTP_CREATED);
     }
 
     private function data($is_image = false)
@@ -62,7 +64,7 @@ class StoryPartTest extends TestCase
         if ($is_image) {
             return [
                 // returns an array with an image
-                'content' => '',
+                'content' => $this->faker->image($this->image_directory, 500, 500, null, false),
                 'is_image' => true,
                 'created_by' => $this->user->id,
                 'story_id' => $this->story->id,
@@ -70,6 +72,7 @@ class StoryPartTest extends TestCase
             ];
         } else {
             return [
+                // returns an array without
                 'content' => $this->faker->sentence(9),
                 'is_image' => false,
                 'created_by' => $this->user->id,

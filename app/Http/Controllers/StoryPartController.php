@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\StoryResource;
+use App\Models\Story;
 use App\Models\StoryPart;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class StoryPartController extends Controller
 {
@@ -23,9 +26,12 @@ class StoryPartController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
         $this->authorize('create', StoryPart::class);
+        $story = Story::findOrFail($id);
+        $story->parts()->create($this->validateStoryPartData());
+        return (new StoryResource($story))->response(Response::HTTP_CREATED);
     }
 
     /**
@@ -62,12 +68,12 @@ class StoryPartController extends Controller
         //
     }
 
-    public function validateRatingData()
+    public function validateStoryPartData()
     {
         return request()->validate([
-            'rating' => 'required',
+            'content' => 'required',
+            'is_image' => 'required',
             'created_by' => 'required|exists:App\Models\User,id',
         ]);
     }
-}
 }
