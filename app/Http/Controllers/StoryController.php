@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\StoryResource;
 use App\Models\User;
 use App\Models\Story;
+use Dotenv\Result\Result;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -36,7 +37,7 @@ class StoryController extends Controller
         $this->authorize('create', Story::class);
         $story = request()->user()->stories()->create($this->validateStoryData());
         $story->parts()->create(['content' => 'asdf', 'created_by' => request()->user()->id]);
-        return (new StoryResource($story))->response(Response::HTTP_CREATED);
+        return response(new StoryResource($story), Response::HTTP_CREATED);
     }
 
     /**
@@ -48,7 +49,7 @@ class StoryController extends Controller
     public function show(Story $story)
     {
         $this->authorize('view', $story);
-        return new StoryResource($story);
+        return response(new StoryResource($story), Response::HTTP_OK);
     }
 
     /**
@@ -62,7 +63,7 @@ class StoryController extends Controller
     {
         $this->authorize('update', $story);
         $story->update($this->validateStoryData());
-        return new StoryResource($story);
+        return response(new StoryResource($story), Response::HTTP_OK);
     }
 
     /**

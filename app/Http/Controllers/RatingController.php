@@ -36,7 +36,7 @@ class RatingController extends Controller
     {
         $this->authorize('create', Rating::class);
         $rating = request()->user()->ratings()->create($this->validateRatingData());
-        return (new RatingResource($rating))->response(Response::HTTP_CREATED);
+        return response(new RatingResource($rating), Response::HTTP_CREATED);
     }
 
     /**
@@ -50,7 +50,7 @@ class RatingController extends Controller
     {
         $this->authorize('update', $rating);
         $rating->update($this->validateRatingData());
-        return new RatingResource($rating);
+        return response(new RatingResource($rating), Response::HTTP_OK);
     }
 
     /**

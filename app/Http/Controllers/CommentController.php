@@ -36,7 +36,7 @@ class CommentController extends Controller
     {
         $this->authorize('create', Comment::class);
         $comment = request()->user()->comments()->create($this->validateCommentData());
-        return (new CommentResource($comment))->response(Response::HTTP_CREATED);
+        return response(new CommentResource($comment), Response::HTTP_CREATED);
     }
 
     /**
@@ -50,7 +50,7 @@ class CommentController extends Controller
     {
         $this->authorize('update', $comment);
         $comment->update($this->validateCommentData());
-        return new CommentResource($comment);
+        return response(new CommentResource($comment), Response::HTTP_OK);
     }
 
     /**
