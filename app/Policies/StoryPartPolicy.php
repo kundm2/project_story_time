@@ -5,6 +5,8 @@ namespace App\Policies;
 use App\Models\User;
 use App\Models\StoryPart;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
+use Symfony\Component\HttpFoundation\Response as HTTPResponse;
 
 class StoryPartPolicy
 {
@@ -53,7 +55,9 @@ class StoryPartPolicy
      */
     public function update(User $user, StoryPart $storyPart)
     {
-        return false;
+        return $user->id == $storyPart->created_by
+            ? Response::allow()
+            : Response::deny('You do not own this story part.', HTTPResponse::HTTP_FORBIDDEN);
     }
 
     /**

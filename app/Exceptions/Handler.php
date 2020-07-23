@@ -2,6 +2,8 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Validation\ValidationException;
@@ -56,6 +58,10 @@ class Handler extends ExceptionHandler
                 'message' => 'The given data was invalido.',
                 'errors' => $exception->validator->getMessageBag()->toArray()
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        //else if ($exception instanceof ModelNotFoundException or $exception instanceof MethodNotAllowedHttpException)
+        //    return response([
+        //        'message' => 'The given data was invalido.'
+        //    ], Response::HTTP_FORBIDDEN);
         else {
             return parent::render($request, $exception);
         }

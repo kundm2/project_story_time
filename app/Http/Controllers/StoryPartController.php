@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoryPartRequest;
 use App\Http\Resources\StoryResource;
 use App\Models\Story;
 use App\Models\StoryPart;
@@ -11,61 +12,45 @@ use Symfony\Component\HttpFoundation\Response;
 class StoryPartController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Store a newly created story parts in storage.
      *
+     * @param  \App\Http\Requests\StoryPartRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request, $id)
+    public function store(StoryPartRequest $request)
     {
         $this->authorize('create', StoryPart::class);
-        $story = Story::findOrFail($id);
+        $story = Story::findOrFail(request()->story_id);
         $story->parts()->create($this->validateStoryPartData());
-        return (new StoryResource($story))->response(Response::HTTP_CREATED);
+        return response(new StoryResource($story), Response::HTTP_CREATED);
     }
 
     /**
-     * Display the specified resource.
+     * Update the specified story parts in storage.
      *
+     * @param  \App\Http\Requests\StoryPartRequest  $request
      * @param  \App\Models\StoryPart  $storyPart
      * @return \Illuminate\Http\Response
      */
-    public function show(StoryPart $storyPart)
+    public function update(StoryPartRequest $request, StoryPart $storyPart)
     {
-        //
+        $this->authorize('update', $storyPart);
+        $storyPart->update($this->validateStoryPartData());
+        $story = Story::findOrFail($storyPart->story_id);
+        return response(new StoryResource($story), Response::HTTP_OK);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\StoryPart  $storyPart
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, StoryPart $storyPart)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * Remove the specified story parts from storage.
      *
      * @param  \App\Models\StoryPart  $storyPart
      * @return \Illuminate\Http\Response
      */
     public function destroy(StoryPart $storyPart)
     {
-        //
+        $this->authorize('delete', $storyPart);
+        $storyPart->delete();
+        return response([], Response::HTTP_NO_CONTENT);
     }
 
     public function validateStoryPartData()
@@ -74,6 +59,7 @@ class StoryPartController extends Controller
             'content' => 'required',
             'is_image' => 'required',
             'created_by' => 'required|exists:App\Models\User,id',
+            'story_id' => 'required|exists:App\Models\Story,id'
         ]);
     }
 }

@@ -6,10 +6,12 @@ use App\Models\Story;
 use App\Models\StoryPart;
 use App\Models\User;
 use Faker\Generator as Faker;
+use Illuminate\Http\File;
+use Illuminate\Support\Facades\Storage;
 
 $factory->define(StoryPart::class, function (Faker $faker) {
     $is_image = $faker->boolean();
-    if ($is_image) {
+    if (!$is_image) {
         return [
             'content' => $faker->text(),
             'is_image' => $is_image,

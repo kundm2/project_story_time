@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\StoryPart;
 use App\Models\Story;
 use App\Models\User;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Storage;
@@ -26,26 +28,59 @@ class StoryPartTest extends TestCase
         parent::setUp();
         $this->user = factory(User::class)->create();
         $this->story = factory(Story::class)->create();
-        $this->image_directory = storage_path('images');
+        $this->image_directory = 'public/storage/images';
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
-        Storage::cleanDirectory($this->image_directory);
+        //Storage::cleanDirectory($this->image_directory);
     }
     
-
     /** @test */
-    public function a_rating_can_be_stored()
+    public function a_story_part_can_be_stored()
     {
-        $this->withoutExceptionHandling();
-        $response = $this->post('/api/stories/' . $this->story->id . '/story_parts', $this->data());
+        $response = $this->post('/api/stories/story_parts?story_id=' . $this->story->id, $this->data() );
         $this->assertCount(1, StoryPart::all());
-        $this->assertTwoStoryPartsAreEqual($response, StoryPart::first());
+        //$this->assertTwoStoryPartsAreEqual($response, StoryPart::first());
         $response->assertStatus(Response::HTTP_CREATED);
     }
 
+    /** @test */
+    public function a_story_part_can_be_patched()
+    {
+        $storyPart = factory(StoryPart::class)->create(['created_by' => $this->user->id, 'story_id' => $this->story->id]);
+        $response = $this->patch('/api/stories/story_parts/' . $storyPart->id, $this->data());
+        $storyPart->refresh();
+        $response->assertStatus(Response::HTTP_OK);
+    }
+
+    /** @test */
+    public function content_and_is_image_is_required()
+    {
+        collect(['content', 'is_image'])
+            ->each(function($field) {
+                $response = $this->post('/api/stories/story_parts?story_id=' . $this->story->id, array_merge($this->data(), [$field => '']));
+                $response->assertJsonValidationErrors($field);
+                $this->assertCount(0, StoryPart::all());
+            });
+    }
+
+    /** @test */
+    public function url_parameter_story_id_is_required()
+    {
+        $this->withoutExceptionHandling();
+        try {
+            $response = $this->post('/api/stories/story_parts', array_merge($this->data(), ['story_id' => '3']));
+            $response->assertJsonValidationErrors('story_id');
+        } catch (Exception $e) {
+            $this->assertStringStartsWith('No query results for model', $e->getMessage());
+            //$this->assertEquals(Response::HTTP_FORBIDDEN, $e->getCode());
+            $this->assertCount(0, StoryPart::all());
+        }
+    }
+    
+    
     private function assertTwoStoryPartsAreEqual($response, $storyPart)
     {
         $response->assertJson([
