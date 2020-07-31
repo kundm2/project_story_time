@@ -1,10 +1,8 @@
 import Vue from 'vue';
 import router from './router';
-import App from './components/App'
-//import 'spectre.css';
+import App from './App.vue'
 
 require('./bootstrap');
-
 
 const app = new Vue({
     el: '#app',

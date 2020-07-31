@@ -1,0 +1,56 @@
+.main-container {
+    display: grid;
+    grid-template-columns: 300px calc(100% - 900px) 600px;
+    grid-template-rows: 120px calc(100% - 200px) 80px;
+
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+
+    background-color: $bg-color;
+
+
+    // page components which are used for the start and main page
+    .sidebar-menu {
+        grid-row: 2 / 3;
+        width: 100%;
+        padding: $layout-padding;
+    }
+    
+    .language-switcher {
+        grid-row: 3 / 4;
+    }
+
+    main {
+        background-color: $bg-color-light;
+        grid-row: 2 / 4;
+        grid-column: 2 / 3;
+        border-radius: 50px 0px 0px;
+        padding: $layout-padding;
+    }
+
+    // page components which are just used on the startpage
+    &.startpage {
+
+        .sidebar-preview {
+            background-color: $bg-color-light;
+            grid-row: 1 / 4;
+            grid-column: 3;
+            border-left: 1px solid $gray-color-light;
+        }
+    }
+
+    // page components which are just used on the mainpage
+    &.mainpage {
+
+        header {
+            grid-column: 2 / 4;
+            padding: $layout-padding;
+        }
+
+        main {
+            grid-column: 2/4;
+        }
+
+    }
+}

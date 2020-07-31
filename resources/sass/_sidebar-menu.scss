@@ -1,0 +1,32 @@
+.sidebar-menu {
+
+    ul {
+        margin: 0rem;
+        list-style: none;
+
+        li {
+            margin-top: 0;
+
+            a.btn.btn-lg {
+                text-align: left;
+                width: 100%;
+
+                height: auto;
+                padding: 0.6rem 0.8rem;
+                margin-bottom: 1.2rem;
+                
+                i {
+                    margin-right: 9px;
+                    transition: margin 0.3s;
+                }
+
+                &:hover {
+                    i{
+                        margin-right: 10px;
+                        margin-left: 4px;
+                    }
+                }
+            }
+        }
+    }
+}
