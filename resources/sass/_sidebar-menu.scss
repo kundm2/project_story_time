@@ -17,21 +17,36 @@
                 
                 i {
                     margin-right: 9px;
-                    transition: margin 0.1s;
-                }
-
-                &:hover {
-                    i{
-                        margin-right: 10px;
-                        margin-left: 4px;
-                    }
+                    transition: margin 0.2s, background-color 0.1s;
                 }
             }
 
             a.btn-link {
                 &.active {
                     background-color: $light-color;
+                }
+                
+                &:hover {
                     border: 1px solid $border-color;
+                }
+            }
+
+            a.btn-mobile {
+                display: none;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: $size-lg) {
+    .sidebar-menu {
+        ul {
+            li {
+                a.btn-desktop {
+                    display: none;
+                }
+                a.btn-mobile {
+                    display: block;
                 }
             }
         }
