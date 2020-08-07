@@ -43,7 +43,7 @@ class CommentTest extends TestCase
         $anotherStory = factory(Story::class)->create(['user_id' => $this->user->id]);
         $comment = factory(Comment::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
         $anotherComment = factory(Comment::class)->create(['user_id' => $this->user->id, 'story_id' => $anotherStory->id]);
-        $response = $this->get('/api/comments/?api_token=' . $this->user->api_token . '&story_id=' . $this->story->id);
+        $response = $this->json('GET', '/api/comments/?api_token=' . $this->user->api_token . '&story_id=' . $this->story->id);
         //$this->assertCount(1, json_decode($response->content(), true)['data'] );
         $response->assertStatus(Response::HTTP_OK);
     }
@@ -52,15 +52,14 @@ class CommentTest extends TestCase
     public function viewing_a_single_comment_is_prohibited()
     {
         $comment = factory(Comment::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
-        $response = $this->get('/api/comments/' . $comment->id . '?api_token=' . $this->user->api_token);
-        $response->assertStatus(Response::HTTP_METHOD_NOT_ALLOWED);
+        $response = $this->json('GET', '/api/comments' . $comment->id . '?api_token=' . $this->user->api_token);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
 
     /** @test */
     public function a_comment_can_be_stored()
     {
-        $this->withoutExceptionHandling();
-        $response = $this->post('/api/comments', $this->data());
+        $response = $this->json('POST', '/api/comments', $this->data());
         $this->assertCount(1, Comment::all());
         $this->assertTwoCommentsAreEqual($response, Comment::first());
         $response->assertStatus(Response::HTTP_CREATED);
@@ -69,7 +68,7 @@ class CommentTest extends TestCase
     /** @test */
     public function a_comment_is_required()
     {
-        $response = $this->post('/api/comments', array_merge($this->data(), ['comment' => '']) );
+        $response = $this->json('POST', '/api/comments', array_merge($this->data(), ['comment' => '']));
         $response->assertJsonValidationErrors('comment');
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertCount(0, Comment::all());
@@ -79,7 +78,7 @@ class CommentTest extends TestCase
     public function a_comment_can_be_patched()
     {
         $comment = factory(Comment::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
-        $response = $this->patch('/api/comments/' . $comment->id, $this->data() );
+        $response = $this->json('PATCH', '/api/comments/' . $comment->id, $this->data());
         $comment->refresh();
         $this->assertTwoCommentsAreEqual($response, $comment);
         $response->assertStatus(Response::HTTP_OK);
@@ -92,7 +91,7 @@ class CommentTest extends TestCase
         $anotherUser = factory(User::class)->create();
         $comment = factory(Comment::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
         try {
-            $response = $this->patch('/api/comments/' . $comment->id, array_merge($this->data(),
+            $response = $this->json('PATCH', '/api/comments/' . $comment->id, array_merge($this->data(),
             ['api_token' => $anotherUser->api_token] ));
         } catch (AuthorizationException $ea) {
             $this->assertEquals('You do not own this comment.', $ea->getMessage());
@@ -104,7 +103,7 @@ class CommentTest extends TestCase
     public function a_comment_can_be_deleted()
     {
         $comment = factory(Comment::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
-        $response = $this->delete('/api/comments/' . $comment->id, ['api_token' => $this->user->api_token]);
+        $response = $this->json('DELETE', '/api/comments/' . $comment->id, ['api_token' => $this->user->api_token]);
         $comment->refresh();
         $this->assertCount(0, Comment::all());
         $this->assertNotNull($comment->deleted_at);

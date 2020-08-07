@@ -32,7 +32,7 @@ class RatingTest extends TestCase
         $anotherStory = factory(Story::class)->create(['user_id' => $this->user->id]);
         $rating = factory(Rating::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
         $anotherRating = factory(Rating::class)->create(['user_id' => $this->user->id, 'story_id' => $anotherStory->id]);
-        $response = $this->get('/api/ratings/?api_token=' . $this->user->api_token);
+        $response = $this->json('GET', '/api/ratings/?api_token=' . $this->user->api_token);
         $this->assertCount(2, json_decode($response->content(), true)['data'] );
         $response->assertStatus(Response::HTTP_OK);
     }
@@ -43,7 +43,7 @@ class RatingTest extends TestCase
         $anotherStory = factory(Story::class)->create(['user_id' => $this->user->id]);
         $rating = factory(Rating::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
         $anotherRating = factory(Rating::class)->create(['user_id' => $this->user->id, 'story_id' => $anotherStory->id]);
-        $response = $this->get('/api/ratings/?api_token=' . $this->user->api_token . '&story_id=' . $this->story->id);
+        $response = $this->json('GET', '/api/ratings/?api_token=' . $this->user->api_token . '&story_id=' . $this->story->id);
         $this->assertCount(1, json_decode($response->content(), true)['data'] );
         $response->assertStatus(Response::HTTP_OK);
     }
@@ -52,15 +52,15 @@ class RatingTest extends TestCase
     public function viewing_a_single_rating_is_prohibited()
     {
         $rating = factory(Rating::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
-        $response = $this->get('/api/ratings/' . $rating->id . '?api_token=' . $this->user->api_token);
-        $response->assertStatus(Response::HTTP_METHOD_NOT_ALLOWED);
+        $response = $this->json('GET', '/api/ratings/' . $rating->id . '?api_token=' . $this->user->api_token);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
 
     /** @test */
     public function a_rating_can_be_stored()
     {
         $this->withoutExceptionHandling();
-        $response = $this->post('/api/ratings', $this->data());
+        $response = $this->json('POST', '/api/ratings', $this->data());
         $this->assertCount(1, Rating::all());
         $this->assertTwoRatingsAreEqual($response, Rating::first());
         $response->assertStatus(Response::HTTP_CREATED);
@@ -69,7 +69,7 @@ class RatingTest extends TestCase
     /** @test */
     public function a_rating_is_required()
     {
-        $response = $this->post('/api/ratings', array_merge($this->data(), ['rating' => null]) );
+        $response = $this->json('POST', '/api/ratings', array_merge($this->data(), ['rating' => null]) );
         $response->assertJsonValidationErrors('rating');
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertCount(0, Rating::all());
@@ -78,17 +78,17 @@ class RatingTest extends TestCase
     /** @test */
     public function a_rating_has_to_be_an_integer_or_a_half_number_between_one_and_five()
     {
-        $response = $this->post('/api/ratings', array_merge($this->data(), ['rating' => 1.25]) );
+        $response = $this->json('POST', '/api/ratings', array_merge($this->data(), ['rating' => 1.25]) );
         $response->assertJsonValidationErrors('rating');
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertCount(0, Rating::all());
 
-        $response = $this->post('/api/ratings', array_merge($this->data(), ['rating' => 12.5]) );
+        $response = $this->json('POST', '/api/ratings', array_merge($this->data(), ['rating' => 12.5]) );
         $response->assertJsonValidationErrors('rating');
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertCount(0, Rating::all());
 
-        $response = $this->post('/api/ratings', array_merge($this->data(), ['rating' => 6]) );
+        $response = $this->json('POST', '/api/ratings', array_merge($this->data(), ['rating' => 6]) );
         $response->assertJsonValidationErrors('rating');
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertCount(0, Rating::all());
@@ -98,7 +98,7 @@ class RatingTest extends TestCase
     public function a_rating_can_be_patched()
     {
         $rating = factory(Rating::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
-        $response = $this->patch('/api/ratings/' . $rating->id, $this->data() );
+        $response = $this->json('PATCH', '/api/ratings/' . $rating->id, $this->data());
         $rating->refresh();
         $this->assertTwoRatingsAreEqual($response, $rating);
         $response->assertStatus(Response::HTTP_OK);
@@ -111,7 +111,7 @@ class RatingTest extends TestCase
         $anotherUser = factory(User::class)->create();
         $rating = factory(Rating::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
         try {
-            $response = $this->patch('/api/ratings/' . $rating->id, array_merge($this->data(),
+        $response = $this->json('PATCH', '/api/ratings/' . $rating->id, array_merge($this->data(),
             ['api_token' => $anotherUser->api_token] ));
         } catch (AuthorizationException $ea) {
             $this->assertEquals('You do not own this rating.', $ea->getMessage());
@@ -123,7 +123,7 @@ class RatingTest extends TestCase
     public function a_rating_can_be_deleted()
     {
         $rating = factory(Rating::class)->create(['user_id' => $this->user->id, 'story_id' => $this->story->id]);
-        $response = $this->delete('/api/ratings/' . $rating->id, ['api_token' => $this->user->api_token]);
+        $response = $this->json('DELETE', '/api/ratings/' . $rating->id, ['api_token' => $this->user->api_token]);
         $rating->refresh();
         $this->assertCount(0, Rating::all());
         $this->assertNotNull($rating->deleted_at);

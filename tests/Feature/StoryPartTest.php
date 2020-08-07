@@ -40,7 +40,7 @@ class StoryPartTest extends TestCase
     /** @test */
     public function a_story_part_can_be_stored()
     {
-        $response = $this->post('/api/stories/story_parts?story_id=' . $this->story->id, $this->data() );
+        $response = $this->json('POST', '/api/stories/story_parts?story_id=' . $this->story->id, $this->data() );
         $this->assertCount(1, StoryPart::all());
         //$this->assertTwoStoryPartsAreEqual($response, StoryPart::first());
         $response->assertStatus(Response::HTTP_CREATED);
@@ -50,7 +50,7 @@ class StoryPartTest extends TestCase
     public function a_story_part_can_be_patched()
     {
         $storyPart = factory(StoryPart::class)->create(['created_by' => $this->user->id, 'story_id' => $this->story->id]);
-        $response = $this->patch('/api/stories/story_parts/' . $storyPart->id, $this->data());
+        $response = $this->json('PATCH', '/api/stories/story_parts/' . $storyPart->id, $this->data() );
         $storyPart->refresh();
         $response->assertStatus(Response::HTTP_OK);
     }
@@ -60,7 +60,7 @@ class StoryPartTest extends TestCase
     {
         collect(['content', 'is_image'])
             ->each(function($field) {
-                $response = $this->post('/api/stories/story_parts?story_id=' . $this->story->id, array_merge($this->data(), [$field => '']));
+                $response = $this->json('POST', '/api/stories/story_parts?story_id=' . $this->story->id, array_merge($this->data(), [$field => '']));
                 $response->assertJsonValidationErrors($field);
                 $this->assertCount(0, StoryPart::all());
             });
@@ -71,8 +71,7 @@ class StoryPartTest extends TestCase
     {
         $this->withoutExceptionHandling();
         try {
-            $response = $this->post('/api/stories/story_parts', array_merge($this->data(), ['story_id' => '3']));
-            $response->assertJsonValidationErrors('story_id');
+            $response = $this->json('POST', '/api/stories/story_parts', array_merge($this->data(), ['story_id' => '3']));
         } catch (Exception $e) {
             $this->assertStringStartsWith('No query results for model', $e->getMessage());
             //$this->assertEquals(Response::HTTP_FORBIDDEN, $e->getCode());
