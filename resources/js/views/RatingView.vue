@@ -1,7 +1,7 @@
 <template>
     <div class="columns col-gapless">
         <div class="column col-12">
-            asdf
+            Rating
         </div>
     </div>
 </template>

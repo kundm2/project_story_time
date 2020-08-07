@@ -11,6 +11,14 @@ use Symfony\Component\HttpFoundation\Response as HTTPResponse;
 class CommentPolicy
 {
     use HandlesAuthorization;
+    
+    /**
+     * @var array
+     */
+    protected $headers = [
+        'Accept' => 'application/vnd.api+json',
+        'Content-Type' => 'application/vnd.api+json',
+    ];
 
     /**
      * Determine whether the user can view any models.
@@ -32,7 +40,7 @@ class CommentPolicy
      */
     public function view(User $user, Comment $comment)
     {
-        return true;
+        return false;
     }
 
     /**

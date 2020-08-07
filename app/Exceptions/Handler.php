@@ -3,10 +3,11 @@
 namespace App\Exceptions;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -53,16 +54,16 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof ValidationException)
+        if ($request->expectsJson() && $exception instanceof ValidationException) {
             return response([
                 'message' => 'The given data was invalid.',
                 'errors' => $exception->validator->getMessageBag()->toArray()
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        else if ($exception instanceof ModelNotFoundException or $exception instanceof MethodNotAllowedHttpException)
+        } else if ($request->expectsJson() && ($exception instanceof ModelNotFoundException || $exception instanceof MethodNotAllowedHttpException)) {
             return response([
                 'message' => 'The given data was invalido.'
             ], Response::HTTP_FORBIDDEN);
-        else {
+        } else {
             return parent::render($request, $exception);
         }
     }

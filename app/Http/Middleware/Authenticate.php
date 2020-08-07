@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Middleware;
+use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 
@@ -14,7 +15,10 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
-        if (! $request->expectsJson()) {
+        if ($request->expectsJson()) {
+            abort(Response::HTTP_NOT_FOUND, 'Ressource not found');
+        }
+        else {
             return route('login');
         }
     }
