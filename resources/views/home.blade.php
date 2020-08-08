@@ -25,15 +25,21 @@
         <div class="sidebar-menu">
             <ul>
                 <li>
-                    <a class="btn btn-lg btn-primary" href="{{ route('login') }}">
+                    <a class="btn btn-lg btn-primary btn-desktop" href="{{ route('login') }}">
                         <i class="fas fa-sign-in-alt"></i>
                         {{ __('Login') }}
                     </a>
+                    <a class="btn btn-lg btn-primary btn-mobile tooltip tooltip-right" href="{{ route('login') }}" data-tooltip="{{ __('Login') }}">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </a>
                 </li>
                 <li>
-                    <a class="btn btn-lg btn-link" href="{{ route('register') }}">
-                        <i class="fas fa-user-plus"></i>    
+                    <a class="btn btn-lg btn-link btn-desktop" href="{{ route('register') }}">
+                        <i class="fas fa-user-plus"></i>
                         {{ __('Register') }}
+                    </a>
+                    <a class="btn btn-lg btn-link btn-mobile tooltip tooltip-right" href="{{ route('register') }}" data-tooltip="{{ __('Register') }}">
+                        <i class="fas fa-user-plus"></i>
                     </a>
                 </li>
             </ul>

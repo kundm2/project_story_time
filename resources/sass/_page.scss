@@ -57,7 +57,7 @@
 
 @media only screen and (max-width: $size-lg) {
     .main-container {
-        grid-template-columns: 100px calc(100% - 700px) 600px;
+        grid-template-columns: 100px calc(100% - 500px) 400px;
 
         .sidebar-menu {
             padding: $layout-padding $layout-padding-lg;
