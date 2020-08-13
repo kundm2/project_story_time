@@ -28,7 +28,12 @@ class StoryController extends Controller
             // Get a story where the user hasn't participated yet.
             $userID = request()->user()->id;
             $story = Story::where([['user_id', '<>', $userID], ['isFinished' , '=', null]])->inRandomOrder()->first();
-            return response(new StoryResource($story), Response::HTTP_OK);
+            if ($story) {
+                return response(new StoryResource($story), Response::HTTP_OK);
+            } else {
+                return response([], Response::HTTP_OK);
+            }
+            
         } else if ($request->input('id')) {
             return StoryResource::collection(request()->user()->stories()->orderBy('updated_at', 'desc')->paginate(config('global.pagination_records')) );
         } else {

@@ -101,12 +101,20 @@ class StoryTest extends TestCase
     /** @test */
     public function a_story_for_a_new_game_can_be_retrieved()
     {
-        $this->withoutExceptionHandling();
         $this->json('POST', '/api/stories', $this->newStoryData());
         $anotherUser = factory(User::class)->create();
         factory(Story::class)->create();
         factory(Story::class)->create(['user_id' => $anotherUser->id]);
         $response = $this->json('GET', '/api/stories/?play=1&api_token=' . $this->user->api_token);
+        $response->assertStatus(Response::HTTP_OK);
+    }
+
+    /** @test */
+    public function return_an_empty_response_if_theres_no_new_story_for_a_new_game()
+    {
+        $anotherUser = factory(User::class)->create();
+        $response = $this->json('GET', '/api/stories/?play=1&api_token=' . $this->user->api_token);
+        $response->assertJsonStructure();
         $response->assertStatus(Response::HTTP_OK);
     }
 
