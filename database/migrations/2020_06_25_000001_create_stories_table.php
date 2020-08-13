@@ -17,6 +17,7 @@ class CreateStoriesTable extends Migration
             $table->id();
             $table->string('language', '2');
             $table->unsignedBigInteger('user_id');
+            $table->boolean('isFinished')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
             $table->softDeletes();

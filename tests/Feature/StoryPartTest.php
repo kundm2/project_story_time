@@ -50,7 +50,7 @@ class StoryPartTest extends TestCase
     public function a_story_part_can_be_patched()
     {
         $storyPart = factory(StoryPart::class)->create(['created_by' => $this->user->id, 'story_id' => $this->story->id]);
-        $response = $this->json('PATCH', '/api/stories/story_parts/' . $storyPart->id, $this->data() );
+        $response = $this->json('PATCH', '/api/stories/story_parts/' . $storyPart->id . '?story_id=' . $this->story->id, $this->data() );
         $storyPart->refresh();
         $response->assertStatus(Response::HTTP_OK);
     }
@@ -67,19 +67,30 @@ class StoryPartTest extends TestCase
     }
 
     /** @test */
-    public function url_parameter_story_id_is_required()
+    public function url_parameter_story_must_exist()
     {
         $this->withoutExceptionHandling();
         try {
             $response = $this->json('POST', '/api/stories/story_parts', array_merge($this->data(), ['story_id' => '3']));
         } catch (Exception $e) {
-            $this->assertStringStartsWith('No query results for model', $e->getMessage());
+            $this->assertStringStartsWith('The given data was invalid', $e->getMessage());
+            // TODO: Status is 0 should be 403
             //$this->assertEquals(Response::HTTP_FORBIDDEN, $e->getCode());
             $this->assertCount(0, StoryPart::all());
         }
     }
     
+    /** @test */
+    public function set_isFinished_after_the_numbers_of_games()
+    {   
+        for ($i=0; $i < config('global.game_rounds'); $i++) { 
+            $response = $this->json('POST', '/api/stories/story_parts?story_id=' . $this->story->id, $this->data() );
+        }
+        $responseData = json_decode($response->content(), true);
+        $this->assertTrue($responseData['data']['isFinished']);
+    }
     
+
     private function assertTwoStoryPartsAreEqual($response, $storyPart)
     {
         $response->assertJson([
@@ -101,7 +112,6 @@ class StoryPartTest extends TestCase
                 'content' => $this->faker->image($this->image_directory, 500, 500, null, false),
                 'is_image' => true,
                 'created_by' => $this->user->id,
-                'story_id' => $this->story->id,
                 'api_token' => $this->user->api_token
             ];
         } else {
@@ -110,7 +120,6 @@ class StoryPartTest extends TestCase
                 'content' => $this->faker->sentence(9),
                 'is_image' => false,
                 'created_by' => $this->user->id,
-                'story_id' => $this->story->id,
                 'api_token' => $this->user->api_token
             ];
         }

@@ -59,9 +59,13 @@ class Handler extends ExceptionHandler
                 'message' => 'The given data was invalid.',
                 'errors' => $exception->validator->getMessageBag()->toArray()
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        } else if ($request->expectsJson() && ($exception instanceof ModelNotFoundException || $exception instanceof MethodNotAllowedHttpException)) {
+        } else if ($request->expectsJson() && $exception instanceof MethodNotAllowedHttpException) {
             return response([
-                'message' => 'The given data was invalido.'
+                'message' => 'The given data was invalid.'
+            ], Response::HTTP_FORBIDDEN);
+        } else if ($request->expectsJson() && $exception instanceof ModelNotFoundException) {
+            return response([
+                'message' => 'The given data was invalid.'
             ], Response::HTTP_FORBIDDEN);
         } else {
             return parent::render($request, $exception);

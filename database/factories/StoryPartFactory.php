@@ -10,7 +10,9 @@ use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 
 $factory->define(StoryPart::class, function (Faker $faker) {
-    $is_image = $faker->boolean();
+    //$is_image = $faker->boolean();
+    // TODO: Implement images Generator
+    $is_image = 0;
     if (!$is_image) {
         return [
             'content' => $faker->text(),

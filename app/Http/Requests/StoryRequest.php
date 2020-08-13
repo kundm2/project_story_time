@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoryPartRequest extends FormRequest
+class StoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,16 +24,8 @@ class StoryPartRequest extends FormRequest
     public function rules()
     {
         return [
+            'language' => 'required|size:2',
             'content' => 'required',
-            'is_image' => 'required',
-            'created_by' => 'required|exists:App\Models\User,id',
-            'story_id' => 'required|exists:App\Models\Story,id'
         ];
-    }
-
-    public function all($keys = null)
-    {
-        // Add route parameters to validation data
-        return array_merge(parent::all(), $this->route()->parameters());
     }
 }

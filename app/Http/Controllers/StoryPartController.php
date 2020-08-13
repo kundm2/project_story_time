@@ -22,6 +22,10 @@ class StoryPartController extends Controller
         $this->authorize('create', StoryPart::class);
         $story = Story::findOrFail(request()->story_id);
         $story->parts()->create($this->validateStoryPartData());
+        if ($story->parts()->count() == config('global.game_rounds')) {
+            $story->isFinished = true;
+            $story->save();
+        }
         return response(new StoryResource($story), Response::HTTP_CREATED);
     }
 
