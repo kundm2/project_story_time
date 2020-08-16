@@ -28,7 +28,7 @@
 
 <script>
 export default {
-    name: "HeaderComponent",
+    name: 'HeaderComponent',
 
     props: [
         'username'

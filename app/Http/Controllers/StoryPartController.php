@@ -6,8 +6,12 @@ use App\Http\Requests\StoryPartRequest;
 use App\Http\Resources\StoryResource;
 use App\Models\Story;
 use App\Models\StoryPart;
+use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Str;
 
 class StoryPartController extends Controller
 {
@@ -21,7 +25,37 @@ class StoryPartController extends Controller
     {
         $this->authorize('create', StoryPart::class);
         $story = Story::findOrFail(request()->story_id);
-        $story->parts()->create($this->validateStoryPartData());
+
+        // If image uploaded, it has to be saved first 
+        response($story);
+        if($request->is_image) {
+            $image_64 = $request->input('content'); //your base64 encoded data
+            $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1]; // png
+            $replace = substr($image_64, 0, strpos($image_64, ',')+1);             
+            $image = str_replace($replace, '', $image_64); 
+            $image = str_replace(' ', '+', $image); 
+
+            $dt = new DateTime();
+            $imageName = $dt->format('Y-m-d-H-i-s') . '-' . Str::random(60) . '.' . $extension;
+          
+            Storage::disk('images')->put($imageName, base64_decode($image));
+            StoryPart::create([
+                'content' => $imageName,
+                'is_image' => $request->is_image,
+                'created_by' => Auth::user()->id,
+                'story_id' => $request->story_id
+            ]);
+        }
+        else {
+            $story->parts()->create([
+                'content' => $request->content,
+                'is_image' => $request->is_image,
+                'created_by' => Auth::user()->id,
+                'story_id' => $request->story_id
+            ]);
+        }
+        
+        
         if ($story->parts()->count() == config('global.game_rounds')) {
             $story->isFinished = true;
             $story->save();

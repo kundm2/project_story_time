@@ -1,0 +1,52 @@
+
+.play-canvas {
+    width: 750px;
+    
+    .card {
+        border: 0;
+        box-shadow: 0 0.25rem 1rem rgba(48,55,66,.15);
+
+        textarea.form-input {
+            resize: none;
+            border: 0;
+            background: $secondary-color;
+        }
+
+        .drawing-tools {
+            list-style: none;
+            margin: 0;
+
+            li {
+                float: left;
+                margin: 0 0.47rem 0 0;
+                
+                &.color-slider {
+                    margin-top: 0.3rem;
+                    
+                    .slider {
+
+                        &:focus {
+                            box-shadow: none;
+                        }
+                    }
+                }
+
+                &:last-child {
+                    margin: 0;
+                }
+            }
+        }
+
+        .square-input {
+            width: 36px;
+            height: 36px;
+            //border: 0.05rem solid #bcc3ce;
+        }
+
+        #drawing {
+            background-color: white;
+            width: 100%;
+            border: 1px solid $secondary-color;
+        }
+    }
+}

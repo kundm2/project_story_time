@@ -26,7 +26,6 @@ class StoryPartRequest extends FormRequest
         return [
             'content' => 'required',
             'is_image' => 'required',
-            'created_by' => 'required|exists:App\Models\User,id',
             'story_id' => 'required|exists:App\Models\Story,id'
         ];
     }
