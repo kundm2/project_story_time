@@ -20,7 +20,8 @@ class StoryResource extends JsonResource
                 'language' => $this->language,
                 'parts' => StoryPartResource::collection($this->parts),
                 'isFinished' => $this->isFinished,
-                'user_id' => $this->user_id
+                'user_id' => $this->user_id,
+                'createdAt' => $this->created_at->diffForHumans()
             ],
             'links' => [
                 'self' => $this->path(),

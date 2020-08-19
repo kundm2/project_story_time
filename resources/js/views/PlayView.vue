@@ -1,29 +1,36 @@
 <template>
-    <div class="columns col-gapless">
-        <div class="play-canvas col-10 col-mx-auto">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title h5">
-                    </div>
-                    <div class="card-subtitle text-gray">
-                        <div class="text-right">
-                            <a href="#">How it works?</a>
+    <div class="container">
+        
+        <div v-if="isLoading" class="columns">
+            <LoadingPageComponent></LoadingPageComponent>
+        </div>
+
+        <div v-else class="columns col-gapless">
+            <div class="play-canvas col-10 col-mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title h5">
+                        </div>
+                        <div class="card-subtitle text-gray">
+                            <div class="text-right">
+                                <a href="#">How it works?</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div v-if="isNewStory || isNextStoryPartText">
-                        <TextGameComponent :story="story" :charLimit="charLimit" @update:content="form.content = $event"></TextGameComponent>
+                    <div class="card-body">
+                        <div v-if="isNewStory || isNextStoryPartText">
+                            <TextGameComponent :story="story" :charLimit="charLimit" @update:content="form.content = $event"></TextGameComponent>
+                        </div>
+                        <div v-else>
+                            <DrawingGameComponent :story="story" @update:content="form.content = $event"></DrawingGameComponent>
+                        </div>
                     </div>
-                    <div v-else>
-                        <DrawingGameComponent :story="story" @update:content="form.content = $event"></DrawingGameComponent>
+                    <div class="card-footer text-right">
+                        <button class="btn btn-primary" @click="submitForm">
+                            Send
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
                     </div>
-                </div>
-                <div class="card-footer text-right">
-                    <button class="btn btn-primary" @click="submitForm">
-                        Send
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
                 </div>
             </div>
         </div>
@@ -31,6 +38,8 @@
 </template>
 
 <script>
+    import LoadingPageComponent from '../components/LoadingPageComponent';
+
     import DrawingGameComponent from '../components/DrawingGameComponent';
     import TextGameComponent from '../components/TextGameComponent';
 
@@ -38,6 +47,7 @@
         name: "PlayView",
         
         components: {
+            LoadingPageComponent,
             DrawingGameComponent,
             TextGameComponent
         },
@@ -63,6 +73,7 @@
                     });
             } else {
                 this.isNewStory = true;
+                this.isLoading = false;
             }
         },
 

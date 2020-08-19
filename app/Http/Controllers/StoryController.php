@@ -33,10 +33,11 @@ class StoryController extends Controller
             } else {
                 return response([], Response::HTTP_OK);
             }
-            
-        } else if ($request->input('id')) {
+        } else if ($request->input('mystories')) {
+            // Return just the users stories
             return StoryResource::collection(request()->user()->stories()->orderBy('updated_at', 'desc')->paginate(config('global.pagination_records')) );
         } else {
+            // Returns all stories
             return StoryResource::collection(Story::paginate(config('global.pagination_records')));
         }
     }

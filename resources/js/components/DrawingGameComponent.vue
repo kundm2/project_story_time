@@ -2,7 +2,7 @@
     <div class="columns col-gapless drawing-canvas">
         <div class="column col-12">
             <p class="h5">
-                {{ story.parts[story.parts.length - 1].data.content}}
+                {{ story.parts[story.parts.length - 1].data.content }}
             </p>
         </div>
         <div class="column col-12">

@@ -41,7 +41,7 @@ class StoryTest extends TestCase
         $story = factory(Story::class)->create(['user_id' => $this->user->id]);
         $anotherUser = factory(User::class)->create();
         $anotherStory = factory(Story::class)->create(['user_id' => $anotherUser->id]);
-        $response = $this->json('GET', '/api/stories/?api_token=' . $this->user->api_token . '&id=1');
+        $response = $this->json('GET', '/api/stories/?api_token=' . $this->user->api_token . '&mystories=1');
         $this->assertCount(1, json_decode($response->content(), true)['data'] );
         $response->assertStatus(Response::HTTP_OK);
     }

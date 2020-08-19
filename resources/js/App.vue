@@ -43,7 +43,7 @@
                         btnClass: 'btn-primary'
                     },
                     {
-                        target: '/my-stories',
+                        target: '/stories',
                         label: 'My Stories ',
                         icon: 'fa-images',
                         btnClass: 'btn-link'
@@ -51,7 +51,7 @@
                     {
                         target: '/browse',
                         label: 'Browse',
-                        icon: 'fa-tags',
+                        icon: 'fa-search',
                         btnClass: 'btn-link'
                     },
                     {
