@@ -21,6 +21,7 @@ class StoryResource extends JsonResource
                 'parts' => StoryPartResource::collection($this->parts),
                 'isFinished' => $this->isFinished,
                 'user_id' => $this->user_id,
+                'rating' => $this->ratings->avg('rating'),
                 'createdAt' => $this->created_at->diffForHumans()
             ],
             'links' => [

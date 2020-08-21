@@ -11,7 +11,7 @@
             <LoadingPageComponent></LoadingPageComponent>
         </div>
         <div v-else class="columns">
-            <StoryCardComponent v-for="story in stories" :key="story.data.id" :story="story.data"></StoryCardComponent>
+            <StoryCardComponent v-for="story in stories.data" :key="story.data.id" :story="story.data"></StoryCardComponent>
         </div>
     </div>
 </template>
@@ -37,7 +37,7 @@ export default {
     mounted() {
         axios.get('/api/stories/?mystories=1')
             .then(response => {
-                this.stories = response.data.data;
+                this.stories = response.data;
                 this.isLoading = false;
             })
             .catch(error => {

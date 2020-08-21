@@ -8,8 +8,30 @@
         <div v-else class="columns col-gapless">
             <div class="play-canvas col-10 col-mx-auto">
                 <div class="card">
+                    <div class="card-header">
+                        <div class="columns">
+                            <div class="column col-4">
+                                <p class="text-gray">
+                                    Created {{story.createdAt}}
+                                </p>
+                            </div>
+                            
+                            <div class="column col-4">
+                                <p class="text-center">
+                                </p>
+                            </div>
+
+                            <div class="column col-4">
+                                <p class="text-primary text-right">
+                                    <StarRatingComponent :rating="story.rating"></StarRatingComponent>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <StoryPartDisplayComponent v-for="part in story.parts" :key="part.data.id" :storyPart="part.data"></StoryPartDisplayComponent>
+                        <div class="columns">
+                            <StoryPartDisplayComponent v-for="part in story.parts" :key="part.data.id" :storyPart="part.data"></StoryPartDisplayComponent>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -20,13 +42,15 @@
 <script>
 import LoadingPageComponent from '../components/LoadingPageComponent';
 import StoryPartDisplayComponent from '../components/StoryPartDisplayComponent';
+import StarRatingComponent from '../components/StarRatingComponent';
 
 export default {
     name: "SingleStoryView",
     
     components: {
+        LoadingPageComponent,
         StoryPartDisplayComponent,
-        LoadingPageComponent
+        StarRatingComponent
     },
 
     data: function () {

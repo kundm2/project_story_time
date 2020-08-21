@@ -15,8 +15,9 @@
                 <router-link v-if="story.isFinished" :to="'stories/' + story.id" class="btn btn-primary btn-block">View</router-link>
                 
                 <button v-else class="btn btn-link btn-block" disabled>
-                    {{story.parts.length}} / 7
+                        {{story.parts.length}} / 7 - in progress
                 </button>
+                <progress v-if="!story.isFinished" class="progress" :value="storyProgress" max="100"></progress>
             </div>
         </div>
     </div>
@@ -28,7 +29,13 @@ export default {
 
     props:[
         'story'
-    ]   
+    ],
+
+    computed: {
+        storyProgress() {
+            return this.story.parts.length / 7 * 100;
+        },
+    }
 }
 </script>
 

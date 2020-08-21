@@ -27,6 +27,7 @@
         grid-column: 2 / 3;
         border-radius: 50px 0px 0px;
         padding: $layout-padding;
+        overflow-y: scroll;
     }
 
     // page components which are just used on the startpage
