@@ -9,7 +9,7 @@
             </div>
         </template>
         <div class="column col-12">
-            <textarea class="form-input" rows="4" v-model="content" :maxlength="charLimit" @keyup="somethingTyped"></textarea>
+            <textarea class="form-input" rows="4" v-model="content" :maxlength="charLimit" @keyup="somethingTyped" autofocus></textarea>
             <span :class="charsLeftClass">{{content.length}} / {{charLimit}}</span>
         </div>
     </div>

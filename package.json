@@ -11,10 +11,11 @@
     },
     "devDependencies": {
         "@fortawesome/fontawesome-free": "^5.14.0",
+        "@types/fabric": "^3.6.3",
         "axios": "^0.19",
         "canvas": "^2.6.1",
         "cross-env": "^7.0",
-        "@types/fabric": "^3.6.3",
+        "jw-paginate": "^1.0.4",
         "laravel-mix": "^5.0.1",
         "lodash": "^4.17.19",
         "net": "^1.0.2",
